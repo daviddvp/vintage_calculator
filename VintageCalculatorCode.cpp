@@ -1,72 +1,56 @@
 #include <iostream>
-#include <cstdlib>
+#include <string>
+#include <sstream>
+#include <limits>
+#include <algorithm>  // Include this library to use replace
 
 using namespace std;
 
-int main()
-{
-    int opcion;
-    bool repetir = true;
-    float num1;
-    float num2;
-  
+float operar(float a, float b, char op) {
+    if (op == '/' && b == 0) { 
+        cout << "Error: Cannot divide by zero.\n"; 
+        return numeric_limits<float>::quiet_NaN(); 
+    }
+    return (op == '+') ? a + b : (op == '-') ? a - b : (op == '*') ? a * b : a / b;
+}
 
-    do {
-        system("cls");
+float leerNumero(const string& mensaje) {
+    float num;
+    string entrada;
+    while (true) {
+        cout << mensaje;
+        cin >> entrada;
+        replace(entrada.begin(), entrada.end(), ',', '.');  // Replace commas with dots
 
-        // Texto del menu principal
-        cout << "\nMenu de Opciones" << endl;
-        cout << "1. Suma" << endl;
-        cout << "2. Resta" << endl;
-        cout << "3. Division" << endl;
-        cout << "4. Multiplicacion" << endl;
-        cout << "0. SALIR" << endl;
-
-        cout << "\nIngrese una opcion: ";
-        cin >> opcion;
-        cout << "\n";
-
-        switch (opcion) {
-        case 1:
-            cout << "Inserta un numero: "; cin >> num1;
-            cout << "Inserta otro numero: "; cin >> num2;
-            cout << "Resultado: " << num1 + num2 << endl;
-
-            system("pause>nul"); // Pausa
-            break;
-
-        case 2:
-            // Lista de instrucciones de la opción 2     
-            cout << "Inserta un numero: "; cin >> num1;
-            cout << "Inserta otro numero: "; cin >> num2;
-            cout << "Resultado: " << num1 - num2 << endl;
-
-            system("pause>nul"); // Pausa
-            break;
-
-        case 3:
-            // Lista de instrucciones de la opción 3                
-            cout << "Inserta un numero: "; cin >> num1;
-            cout << "Inserta otro numero: "; cin >> num2;
-            cout << "Resultado: " << num1 / num2 << endl;
-
-            system("pause>nul"); // Pausa            
-            break;
-
-        case 4:
-            // Lista de instrucciones de la opción 4 
-            cout << "Inserta un numero: "; cin >> num1;
-            cout << "Inserta otro numero: "; cin >> num2;
-            cout << "Resultado: " << num1 * num2 << endl;
-
-            system("pause>nul"); // Pausa                
-            break;
-
-        case 0:
-            repetir = false;
-            break;
+        stringstream ss(entrada);
+        if (ss >> num && ss.eof()) {
+            break;  // Exit the loop if the input is valid
+        } else {
+            cout << "Invalid input. Please try again.\n";
+            cin.clear();  // Clear the error state of cin
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');  // Ignore the incorrect input
         }
-    } while (repetir);
+    }
+    return num;
+}
 
+int main() {
+    int opcion;
+    while (true) {
+        cout << "\n1. Addition\n2. Subtraction\n3. Division\n4. Multiplication\n0. EXIT\nOption: ";
+        cin >> opcion;
+
+        if (opcion < 0 || opcion > 4) { 
+            cout << "Invalid option. Please try again.\n"; 
+            continue;
+        }
+        if (opcion == 0) { cout << "Exiting...\n"; break; }
+
+        float num1 = leerNumero("First number: ");
+        float num2 = leerNumero("Second number: ");
+        char op = (opcion == 1) ? '+' : (opcion == 2) ? '-' : (opcion == 3) ? '/' : '*';
+
+        cout << "Result: " << operar(num1, num2, op) << "\n";
+    }
     return 0;
 }
